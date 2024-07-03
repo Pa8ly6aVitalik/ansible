@@ -13,7 +13,56 @@
   tags:
     - install
 
-- name: Install deb packages
-  apt:
-    deb:
+- name: Create dirs for user container on remote host
+  file:
+    path: "/var/opt/cprocsp/keys/{{user_name}}"
+    state: directory
+    owner: "{{user_name}}"
+  when: container_name != ""
+  tags: 
+    - install_certificate
 
+- name: Copy container's files to remote host
+  copy: 
+    src: ../files/{{container_dir}}
+    dest: "/var/opt/cprocsp/keys/{{user_name}}"
+    owner: "{{user_name}}"
+  when: container_dir != ""
+  tags: 
+    - install_certificate
+
+- name: Copy certs to remote host
+  copy: 
+    src: ../files/certs
+    dest: "{{tmp_dir}}"
+  when: cert_dir != ""
+  tags: 
+    - install_certificate
+
+- name: Install root cert(s)
+  shell: /opt/cprocsp/bin/amd64/certmgr -inst -all -store mroot -file {{item}}
+  with_items: "{{root_cert}}"
+  when: root_cert is defined
+  tags:
+    - install_certificate
+
+
+- name: Install user cert and link to container
+  become_user: "{{user_name}}"
+  shell: /opt/cprocsp/bin/amd64/certmgr -inst -file {{user_cert}} -cont {{container_name}} 
+  when: user_cert != ""
+  tags:
+    - install_certificate
+
+- name: Clean tmp dir
+  file:
+    path: "{{tmp_dir}}"
+    state: absent
+  tags:
+    - install
+      #- name: Clean tmp dir 
+      #  become: yes
+      #  files:
+  #  shell: rm -rf {{tmp_dir}}  
+#GitHub
+#https://github.com/malkinfedor/ansible_cryptopro.git
