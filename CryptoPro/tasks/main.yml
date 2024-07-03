@@ -8,7 +8,7 @@
 
 - name: Unpacking rpm files
   unarchive:
-    src: ../files/linux-amd64.tgz 
+    src: ../files/linux-amd64_deb.tgz 
     dest: "{{tmp_dir}}"
   tags:
     - install
