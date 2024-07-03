@@ -1,2 +1,19 @@
-- name: Install CryptoPro5
-  apt: update_cach=yes
+---
+- name: Creates directory
+  file:
+    path: "{{tmp_dir}}"
+    state: directory
+  tags: 
+    - install
+
+- name: Unpacking rpm files
+  unarchive:
+    src: ../files/linux-amd64.tgz 
+    dest: "{{tmp_dir}}"
+  tags:
+    - install
+
+- name: Install deb packages
+  apt:
+    deb:
+
