@@ -1,0 +1,3 @@
+//Основной playbook первоначальной настройки АРМ
+- hosts: virtualastra
+
