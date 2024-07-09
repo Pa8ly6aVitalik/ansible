@@ -61,3 +61,6 @@ ansible -m ping locallinux
 
 #Запуск playbook с лимитированием на один host
 ansible-playbook example-simple-playbook.yml --limit host1
+
+#Роли находятся
+/root/.ansible/roles/geerlingguy.docker
