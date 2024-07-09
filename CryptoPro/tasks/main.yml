@@ -13,14 +13,10 @@
   tags:
     - install
 
-- name: Install rpm packages
-  apt: 
-    name: "{{item}}" 
-    state: present
-  with_fileglob: "{{cryptopro_packages}}"
-  tags:
-    - install
-
+- name: Install deb packages
+  apt: deb="{{cryptopro_packages}}"
+  sudo: true
+  
 - name: Create dirs for user container on remote host
   file:
     path: "/var/opt/cprocsp/keys/{{user_name}}"
