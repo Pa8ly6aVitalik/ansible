@@ -14,8 +14,11 @@
     - install
 
 - name: Install deb packages
-  apt: deb="{{cryptopro_packages}}"
-  sudo: true
+  packages:
+    name: "{{item}}"
+    with_fileglob: "{{cryptopro_packages}}"
+    tags:
+    - install
   
 - name: Create dirs for user container on remote host
   file:
