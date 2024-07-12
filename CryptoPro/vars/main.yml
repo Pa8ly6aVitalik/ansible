@@ -4,7 +4,7 @@ dir_with_rpm: /tmp/cryptopro/linux-amd64/
 tmp_dir: /tmp/cryptopro/
 cert_dir: "{{tmp_dir}}certs/"
 # Escape every slash ("\") by adding one extra slash ("\") 
-container_name: '\\\\.\\HDIMAGE\\le-123-456-34-c1d'
+container_name: '\\.\HDIMAGE\311092436'
 user_name: user
 user_cert: "{{cert_dir}}cert1.cer"
 cryptopro_packages: [

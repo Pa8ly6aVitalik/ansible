@@ -3,73 +3,83 @@
   file:
     path: "{{tmp_dir}}"
     state: directory
-  tags: 
+  tags:
     - install
 
-- name: Unpacking rpm files
+- name: Unpacking deb files
   unarchive:
     src: ../files/linux-amd64_deb.tgz 
     dest: "{{tmp_dir}}"
   tags:
     - install
 
-- name: Install deb packages
-  packages:
-    name: "{{item}}"
-    with_fileglob: "{{cryptopro_packages}}"
-    tags:
-    - install
-  
+- name: Uninstall CryptoPro
+  become: true
+  ansible.builtin.shell: "{{tmp_dir}}linux-amd64_deb/uninstall.sh"
+
+#- name: Install deb packages
+#  become: true
+#  apt:
+#    pkg: "{{item}}"
+#    state: present
+#  with_fileglob: "{{cryptopro_packages}}"
+
+- name: Install CryptoPro
+  become: true
+  ansible.builtin.shell: "{{tmp_dir}}linux-amd64_deb/install.sh"
+
+- name: Creating a path for system utilities CryptoPro
+  become: true
+  become_user: "{{user_name}}"
+  ansible.builtin.shell: export PATH="$(/bin/ls -d /opt/cprocsp/{s,}bin/*|tr '\n' ':')$PATH"
+
+#- name: Install license validity
+#  ansible.builtin.shell: sudo /opt/cprocsp/sbin/amd64/cpconfig -license -set <номер_лицензии>
+
 - name: Create dirs for user container on remote host
   file:
     path: "/var/opt/cprocsp/keys/{{user_name}}"
     state: directory
     owner: "{{user_name}}"
   when: container_name != ""
-  tags: 
+  tags:
     - install_certificate
 
 - name: Copy container's files to remote host
-  copy: 
+  copy:
     src: ../files/{{container_dir}}
     dest: "/var/opt/cprocsp/keys/{{user_name}}"
     owner: "{{user_name}}"
   when: container_dir != ""
-  tags: 
+  tags:
     - install_certificate
 
 - name: Copy certs to remote host
-  copy: 
+  copy:
     src: ../files/certs
     dest: "{{tmp_dir}}"
   when: cert_dir != ""
-  tags: 
-    - install_certificate
-
-- name: Install root cert(s)
-  shell: /opt/cprocsp/bin/amd64/certmgr -inst -all -store mroot -file {{item}}
-  with_items: "{{root_cert}}"
-  when: root_cert is defined
   tags:
     - install_certificate
 
+#- name: Install root cert(s)
+#  shell: /opt/cprocsp/bin/amd64/certmgr -inst -all -store mroot -file {{item}}
+#  with_items: "{{root_cert}}"
+#  when: root_cert is defined
+#  tags:
+#    - install_certificate
 
-- name: Install user cert and link to container
-  become_user: "{{user_name}}"
-  shell: /opt/cprocsp/bin/amd64/certmgr -inst -file {{user_cert}} -cont {{container_name}} 
-  when: user_cert != ""
-  tags:
-    - install_certificate
+#- name: Clean tmp dir
+#  file:
+#    path: "{{tmp_dir}}"
+#    state: absent
+#  tags:
+#    - install
 
-- name: Clean tmp dir
-  file:
-    path: "{{tmp_dir}}"
-    state: absent
-  tags:
-    - install
-      #- name: Clean tmp dir 
-      #  become: yes
-      #  files:
-  #  shell: rm -rf {{tmp_dir}}  
+#- name: Clean tmp dir 
+#  become: yes
+#  files:
+#  shell: rm -rf {{tmp_dir}}  
+
 #GitHub
-#https://github.com/malkinfedor/ansible_cryptopro.git
+#https://github.com/malkinfedor/ansible_cryptopro.gitsudo /opt/cprocsp/sbin/amd64/cpconfig -license -set <номер_лицензии>sudo /opt/cprocsp/sbin/amd64/cpconfig -license -set <номер_лицензии>
