@@ -1,0 +1,28 @@
+---
+#Обновление списка пакетов
+- name: Wine | Update cach
+  when:
+    - ansible_os_family == 'CE 2.14.46 (orel)'
+    - ansible_pkg_mrg == 'apt'
+  become: true
+  apt: 
+    update_cache: yes
+
+#Запрос установленных пакетов
+- name: Wine | Select packges installed
+  ansible.builtin.packages_facts:
+    manager: auto 
+
+#Проверка установлен ли wine
+- name: Wine | Check if wine is installed
+  debug:
+    msg: "Wine installed"
+    when: " 'wine' in ansible_facts.packages"
+
+- name: wine | Install wine
+  when:
+  - ansible_system == 'Linux'
+  - ansible_os_family != 'Suse'
+  become: true
+
+
