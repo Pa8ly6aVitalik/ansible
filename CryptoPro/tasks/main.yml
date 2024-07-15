@@ -20,16 +20,15 @@
 #- name: Install deb packages
 #  become: true
 #  apt:
-#    pkg: "{{item}}"
+#    deb: "{{ item }}"
 #    state: present
-#  with_fileglob: "{{cryptopro_packages}}"
+#  loop: "{{ cryptopro_packages }}"
 
 - name: Install CryptoPro
   become: true
   ansible.builtin.shell: "{{tmp_dir}}linux-amd64_deb/install.sh"
 
 - name: Creating a path for system utilities CryptoPro
-  become: true
   become_user: "{{user_name}}"
   ansible.builtin.shell: export PATH="$(/bin/ls -d /opt/cprocsp/{s,}bin/*|tr '\n' ':')$PATH"
 
