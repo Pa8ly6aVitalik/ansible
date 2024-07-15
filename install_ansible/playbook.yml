@@ -1,3 +1,6 @@
 //Основной playbook первоначальной настройки АРМ
-- hosts: virtualastra
 
+- hosts: virtualastra
+  become: true
+  roles:
+    - CryptoPro
