@@ -1,43 +1,51 @@
 ---
-- name: Creates directory
+- name: CryptoPro | Creates directory
   file:
     path: "{{tmp_dir}}"
     state: directory
   tags:
-    - install
+    - install CryptoPro
 
-- name: Unpacking deb files
+- name: CryptoPro | Unpacking deb files
   unarchive:
     src: ../files/linux-amd64_deb.tgz 
     dest: "{{tmp_dir}}"
   tags:
-    - install
+    - install CryptoPro
 
-- name: Uninstall CryptoPro via sh
+- name: CryptoPro | Uninstall CryptoPro via sh
   become: true
   ansible.builtin.shell: "{{tmp_dir}}linux-amd64_deb/uninstall.sh"
   tags: 
-    - install
+    - install CryptoPro
 
-#- name: Install deb packages
+#- name: CryptoPro | Install deb packages
 #  become: true
 #  apt:
 #    deb: "{{ item }}"
 #    state: present
 #  loop: "{{ cryptopro_packages }}"
+#  tags:
+#     - install
 
-- name: Install CryptoPro via sh
+- name: CryptoPro | Install CryptoPro via sh
   become: true
   ansible.builtin.shell: "{{tmp_dir}}linux-amd64_deb/install.sh"
+  tags:
+    - install CryptoPro
 
-- name: Creating a path for system utilities CryptoPro
+- name: CryptoPro | Creating a path for system utilities CryptoPro
   become_user: "{{user_name}}"
   ansible.builtin.shell: export PATH="$(/bin/ls -d /opt/cprocsp/{s,}bin/*|tr '\n' ':')$PATH"
+  tags:
+    - customization CryptoPro
 
-#- name: Install license validity
-#  ansible.builtin.shell: sudo /opt/cprocsp/sbin/amd64/cpconfig -license -set <номер_лицензии>
+#- name: CryptoPro | Install license validity
+#  ansible.builtin.shell: sudo /opt/cprocsp/sbin/amd64/cpconfig -license -set {{ lic_lic_cryptopro }}
+#  tags:
+#    - customization CryptoPro
 
-- name: Create dirs for user container on remote host
+- name: CryptoPro | Create dirs for user container on remote host
   file:
     path: "/var/opt/cprocsp/keys/{{user_name}}"
     state: directory
@@ -46,7 +54,7 @@
   tags:
     - install_certificate
 
-- name: Copy container's files to remote host
+- name: CryptoPro | Copy container's files to remote host
   copy:
     src: ../files/{{container_dir}}
     dest: "/var/opt/cprocsp/keys/{{user_name}}"
@@ -55,7 +63,7 @@
   tags:
     - install_certificate
 
-- name: Copy certs to remote host
+- name: CryptoPro | Copy certs to remote host
   copy:
     src: ../files/certs
     dest: "{{tmp_dir}}"
@@ -63,14 +71,14 @@
   tags:
     - install_certificate
 
-#- name: Install root cert(s)
+#- name: CryptoPro | Install root cert(s)
 #  shell: /opt/cprocsp/bin/amd64/certmgr -inst -all -store mroot -file {{item}}
 #  with_items: "{{root_cert}}"
 #  when: root_cert is defined
 #  tags:
 #    - install_certificate
 
-#- name: Clean tmp dir
+#- name: CryptoPro | Clean tmp dir
 #  file:
 #    path: "{{tmp_dir}}"
 #    state: absent
