@@ -16,6 +16,8 @@
 - name: Uninstall CryptoPro
   become: true
   ansible.builtin.shell: "{{tmp_dir}}linux-amd64_deb/uninstall.sh"
+  tags: 
+    - install
 
 #- name: Install deb packages
 #  become: true
