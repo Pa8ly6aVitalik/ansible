@@ -21,3 +21,5 @@ cryptopro_packages: [
 root_cert: [
 "{{cert_dir}}root.cer"
 ]
+
+lic_cryptopro: lic
