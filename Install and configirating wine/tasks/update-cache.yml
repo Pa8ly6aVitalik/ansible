@@ -1,0 +1,10 @@
+---
+- name: Wine | Update chache
+  when:
+    - ansible_os_family == ''CE 2.14.46 (orel)''
+    - ansible_pkf_mrg == 'apt'
+  become: true
+  apt:
+    update_cache: yes
+  tags:
+    - update_cache
