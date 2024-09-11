@@ -1,0 +1,28 @@
+- name: Mount share
+  hosts: astra
+  become: true
+  tasks:
+    - name: Share | Create directory for mount share
+      file:
+        path: /s
+        state: directory
+        owner: user
+        group: user
+        mode: 0777
+
+    - name: Share | Where in not FSTAB
+      shell: grep '192.168.1.200/arm' /etc/fstab
+      register: textfstab
+      ignore_errors: true
+
+    - name: Share | Edit FSTAB
+      shell: echo "//192.168.1.200/arm /s cifs user=user@192.168.1.200,iocharset=utf8,password=use>
+      when: textfstab.failed
+
+- name: Mount share FSTAB
+  hosts: astra
+  become: true
+  become_user: root
+  tasks:
+    - name: Mount share
+      shell: mount -a

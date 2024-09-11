@@ -1,5 +1,100 @@
 ---
-- import_task: update-cahce.yml
+- name: Wine | Check information about the hosts
+  ansible.builtin.setup:
+    gather_subset:
+      - '!all'
+      - '!any'
+      - facter
+  tags:
+    - check_facts
+
+#Обновление списка пакетов
+- name: Wine | Update cach
+  when:
+    - ansible_os_family == 'Astra Linux (Orel)'
+    - ansible_distribution_version == '2.12.46'
+  become: true
+  apt:
+    update_cache: yes
+  tags:
+    - update_cache
+
+#Запрос установленных пакетов
+- name: Wine | Select packges installed
+  become: true
+  packages_facts:
+    manager: "auto"
+
+#Проверка установлен ли wine
+- name: Wine | Check if wine is installed
+  become: true
+  debug: msg='Wine installed'
+  when:
+    - "'wine' in ansible_facts.packages"
+
+#Установка Wine
+- name: wine | Install wine
+  when:
+    - ansible_os_family == 'Astra Linux (Orel)'
+    - ansible_distribution_version == '2.12.46'
+  become: true
+  package:
+    name: winehq-staging
+    state: present
+  tags:
+    - install_wine
+
+#Установка winetricks
+- name: Wine | Install winetrciks
+  shell: |
+    wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+    chmod +x winetricks
+    sudo cp winetricks /usr/bin
+    sudo mkdir /usr/lib/wine
+    sudo ln -s /opt/wine-staging/bin/wineserver /usr/lib/wine/wineserver
+    sudo rm /usr/bin/wine
+    sudo ln -s /opt/wine-staging/bin/wine /usr/bin/wine
+
+#Установка виртуального рабочего стола, что бы процес установки проходил в тихом режиме
+- name: wine | Install xvfb - Virtual descktop
+  become: true
+  package:
+    name: xvfb
+  tags:
+    - configuret winetricks
+
+#Изменение префикса Wine
+- name: wine | prefix 32
+  shell: |
+    sudo rm -r -f ~/.wine
+    sudo ln -s /opt/wine-staging/bin/wine /usr/bin/wine
+
+- name: wine | WINEARCH=win32 WINEPREFIX=~/.wine wine wineboot
+  become_user: "user"
+  shell: WINEARCH=win32 WINEPREFIX=~/.wine wine wineboot
+
+#Установка библиотек
+- name: wine | Install dll
+  shell: xvfb-run winetricks -q mdac27 jet40
+  args:
+    executable: /bin/bash
+
+#Создание папки для хранения драйверов odbc
+- name: wine | Create dir for odbc driver postgresql Windows
+  file:
+    path: /tmp/odbc_postgresql/
+    state: directory
+    owner: "user"
+#Копирование на удаленных хост драйверов odbc
+- name: wine | Copy odbc driver to remote host
+  copy:
+    src: ../files/psqlodbc_rosta.msi
+    dest: /tmp/odbc_postgresql/psqlodbc_rosta.msi
+    owner: "user"
+#Установка драйверов odbc в тихом режиме
+- name: wine | Install pgsqlodbc driver
+  shell: wine msiexec /i /tmp/odbc_postgresql/psqlodbc_rosta.msi /qn
+
 
 
 
