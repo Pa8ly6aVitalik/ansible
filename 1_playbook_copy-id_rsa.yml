@@ -1,3 +1,4 @@
+- name: SSH | Copy rsa_key for user
   hosts: astra
   become: yes
   tasks:
