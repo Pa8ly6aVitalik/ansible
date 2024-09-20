@@ -1,3 +1,13 @@
+---
+- name: Install cifs
+  hosts: astra
+  become: true
+  tasks:
+    - name: apt-get install cifs-utils
+      package:
+        name: cifs-utils
+        state: present
+
 - name: Mount share
   hosts: astra
   become: true
