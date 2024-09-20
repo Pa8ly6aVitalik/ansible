@@ -1,19 +1,11 @@
-hosts: astra
-become: true
-tasks:
-  - name: Check information about the hosts
-    ansible.builtin.setup:
-      gather_subset:
-        - '!all'
-        - '!any'
-        - facter
-    tags:
-    - check_facts
-
-  - name: Add repository AstraLinux SE 1.7 shell
-    become: true
-    shell: |
-      echo >> /etc/apt/sources.list 'deb http://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-b>
-      echo >> /etc/apt/sources.list 'deb http://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-u>
-      echo >> /etc/apt/sources.list 'deb http://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-e>
+---
+- name: Add repository
+  hosts: astra
+  become: true
+  tasks:
+   - name: Add_repository_AstraLinux_SE_1.7_shell
+     ansible.builtin.shell: |
+       echo >> /etc/apt/sources.list 'deb http://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-base/ 1.7_x86-64 main contrib non-free'
+       echo >> /etc/apt/sources.list 'deb http://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-update/ 1.7_x86-64 main contrib non-free'
+       echo >> /etc/apt/sources.list 'deb http://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-extended/ 1.7_x86-64 main contrib non-free astra-ce'
 
