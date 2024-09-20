@@ -16,7 +16,7 @@
       ignore_errors: true
 
     - name: Share | Edit FSTAB
-      shell: echo "//192.168.1.200/arm /s cifs user=user@192.168.1.200,iocharset=utf8,password=use>
+      shell: echo "//192.168.1.200/arm /s cifs user=user@192.168.1.200,iocharset=utf8,password=user,file_mode=0777,dir_mode=0777,noperm 0 0">>/etc/fstab
       when: textfstab.failed
 
 - name: Mount share FSTAB
